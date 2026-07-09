@@ -6,6 +6,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.example.hospital_manage.enums.Gender;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
 @Table(
@@ -33,6 +37,17 @@ public class Receptionist extends BaseEntity{
     @Column
     private String lastName;
 
+    @Column(nullable = false)
+    private Gender gender;
+
+    @Column(nullable = false)
+    private LocalDate dateOfBirth;
+
+    @Column(nullable = false)
+    private LocalDate joiningDate;
+
+    @Column(nullable = false)
+    private Boolean active;
 
 
 }
