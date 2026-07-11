@@ -31,6 +31,7 @@ public class PrescriptionItem extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     private DosageUnit dosageUnit;
+
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(
             name = "prescription_item_intake_times",
