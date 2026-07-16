@@ -1,79 +1,61 @@
 package org.example.hospital_manage.service.impl;
 
-import lombok.AllArgsConstructor;
-import org.example.hospital_manage.mapper.PatientMapper;
-import org.example.hospital_manage.dto.PatientDto;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.example.hospital_manage.dtos.internal.PatientRegistrationRequest;
 import org.example.hospital_manage.entity.Patient;
-import org.example.hospital_manage.exception.ResourceNotFoundException;
+import org.example.hospital_manage.entity.User;
+import org.example.hospital_manage.enums.Role;
 import org.example.hospital_manage.repository.PatientRepository;
+import org.example.hospital_manage.repository.UserRepository;
+import org.example.hospital_manage.service.CodeGenerator;
 import org.example.hospital_manage.service.PatientService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
+@Transactional
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class PatientServiceImpl implements PatientService {
- private PatientRepository patientRepository;
- @Override
-    public PatientDto createPatient(PatientDto patientDto) {
-     Patient patient= PatientMapper.mapToPatient(patientDto);
-     Patient savedPatient=patientRepository.save(patient);
-     return PatientMapper.mapToPatientDto(savedPatient);
- }
+    private final PatientRepository patientRepository;
+   private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
-    public PatientDto getPatientById(Long id) {
-       Patient patient=patientRepository.findById(id)
-               .orElseThrow(() -> new ResourceNotFoundException("Patient is not found with id:"+id));
-       return PatientMapper.mapToPatientDto(patient);
+    public void patientRegistrationRequest(PatientRegistrationRequest request) {
+        // Create User
+        User user = new User();
+        user.setRole(Role.ROLE_PATIENT);
+        user.setEnabled(true);
+        user.setEmail(request.getEmail());
+        user.setPhone(request.getPhone());
 
+        // Temporary password (replace later with a random generator)
+        String temporaryPassword = request.getLastName() + "@123";
+        user.setPassword(passwordEncoder.encode(temporaryPassword));
+
+        // Save first to generate User ID
+        user = userRepository.save(user);
+
+        // Generate username from User ID
+        String patientCode = CodeGenerator.patientCode(user.getId());
+
+        user.setUsername(patientCode);
+
+        // Update user with generated username
+        user = userRepository.save(user);
+
+        // Create Patient Profile
+        Patient patient = new Patient();
+
+        patient.setUserCode(patientCode);   // Recommended field name
+        patient.setUser(user);
+
+        patient.setFirstName(request.getFirstName());
+        patient.setLastName(request.getLastName());
+        patient.setGender(request.getGender());
+        patient.setDateOfBirth(request.getDateOfBirth());
+
+        patientRepository.save(patient);
     }
-
-    @Override
-    public PatientDto updatePatient(Long id, PatientDto patientDto) {
-     Patient updatedpatient=patientRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Patient is not found with id:"+id));
-   if(patientDto.getFirstName()!=null) {
-       updatedpatient.setFirstName(patientDto.getFirstName());
-   }
-   if(patientDto.getLastName()!=null) {
-       updatedpatient.setLastName(patientDto.getLastName());
-   }
-   if(patientDto.getEmail()!=null) {
-       updatedpatient.setEmail(patientDto.getEmail());
-   }
-   if(patientDto.getNumber()!=null) {
-       updatedpatient.setNumber(patientDto.getNumber());
-   }
-   if(patientDto.getAadhaar()!=null) {
-       updatedpatient.setAadhaar(patientDto.getAadhaar());
-   }
-   if(patientDto.getGender()!=null) {
-       updatedpatient.setGender(patientDto.getGender());
-   }
-   if (patientDto.getAge()!=null){
-       updatedpatient.setAge(patientDto.getAge());
-   }
-     updatedpatient=patientRepository.save(updatedpatient);
-     return PatientMapper.mapToPatientDto(updatedpatient);
-
-    }
-
-    @Override
-    public List<PatientDto> getAllPatients() {
-        List<Patient> patients=patientRepository.findAll();
-       return patients.stream().map((patient) -> PatientMapper.mapToPatientDto(patient)).collect(Collectors.toList());
-    }
-
-    @Override
-    public PatientDto deletePatientById(Long id) {
-
-     Patient patient=patientRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("Id not found"));
-        patientRepository.deleteById(id);
-        return PatientMapper.mapToPatientDto(patient);
-    }
-
 
 }

@@ -34,6 +34,11 @@ public class Doctor extends BaseEntity{
             unique = true
     )
     private User user;
+
+ @NotBlank(message = "Username is required")
+ @Column(nullable = false, unique = true, length = 20)
+ private String userCode;
+
    @NotBlank
     @Column
     private String firstName;

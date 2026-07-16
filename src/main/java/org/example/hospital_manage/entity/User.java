@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import org.example.hospital_manage.enums.Role;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 
@@ -15,9 +16,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(
-        name = "users"
-)
+@Table(name = "users")
 public class User extends BaseEntity{
     @Column(unique = true, length = 30)
     private String username;
@@ -45,7 +44,5 @@ public class User extends BaseEntity{
     private Boolean enabled = true;
 
     private LocalDateTime lastLogin;
-
-
 
 }

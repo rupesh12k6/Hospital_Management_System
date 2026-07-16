@@ -1,10 +1,7 @@
 package org.example.hospital_manage.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import org.example.hospital_manage.enums.BloodGroup;
 import org.example.hospital_manage.enums.Gender;
@@ -37,6 +34,10 @@ public class Patient extends BaseEntity{
             unique = true
     )
     private User user;
+
+    @NotBlank(message = "Username is required")
+    @Column(nullable = false, unique = true, length = 20)
+    private String userCode;
 
     @NotBlank(message = "First name is required")
     @Column(nullable = false, length = 50)

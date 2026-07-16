@@ -31,7 +31,12 @@ public class Receptionist extends BaseEntity{
             unique = true
     )
     private User user;
-    @Column
+
+    @NotBlank(message = "Username is required")
+    @Column(nullable = false, unique = true, length = 20)
+    private String userCode;
+
+    @Column(nullable = false)
     private String firstName;
 
     @Column

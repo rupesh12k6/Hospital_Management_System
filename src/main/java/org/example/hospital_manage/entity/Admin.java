@@ -1,9 +1,7 @@
 package org.example.hospital_manage.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +21,11 @@ public class Admin extends BaseEntity{
             unique = true
     )
     private User user;
+
+    @NotBlank(message = "Username is required")
+    @Column(nullable = false, unique = true, length = 20)
+    private String userCode;
+
     @Column
     private String firstName;
     @Column

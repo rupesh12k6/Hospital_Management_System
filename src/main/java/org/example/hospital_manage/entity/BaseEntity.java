@@ -1,12 +1,12 @@
 package org.example.hospital_manage.entity;
 
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @MappedSuperclass
@@ -26,4 +26,5 @@ public abstract class BaseEntity {
     protected LocalDateTime updatedAt;
 
     protected Boolean active = true;
+
 }
